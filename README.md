@@ -31,27 +31,27 @@ The verification environment is **layered and object-oriented**, built entirely 
   Includes constraints to generate valid randomized stimuli for all control operations.
 
 - **Generator**  
-  Creates randomized transactions and sends them to the driver using a mailbox.  
+  Creates randomized transactions and sends them to the driver using a mailbox(gen2dr).  
   Ensures that each operation mode (Hold, Shift Left, Shift Right, Load) is adequately tested.
 
 - **Driver**  
   Drives inputs to the DUT through a virtual interface.  
-  Receives transactions from the generator via a mailbox.
+  Receives transactions from the generator via a mailbox(gen2dr).
 
 - **Write Monitor**  
   Monitors the inputs applied to the DUT.  
-  Captures and sends this data to the reference model via mailbox.
+  Captures and sends this data to the reference model via mailbox(mon2rm).
 
 - **Read Monitor**  
   Continuously observes the DUT output.  
-  Forwards the captured output to the scoreboard using a mailbox.
+  Forwards the captured output to the scoreboard using a mailbox(mon2sb).
 
 - **Reference Model**  
   Implements the expected behavior of the Universal Shift Register.  
-  Receives input data from the write monitor and generates the expected output.
+  Receives input data from the write monitor(mon2rm) and generates the expected output.
 
 - **Scoreboard**  
-  Compares the actual DUT output (from read monitor) and the expected output (from reference model).  
+  Compares the actual DUT output (from read monitor(data2sb)) and the expected output (from reference model(ref2sb)).  
   Reports a pass/fail status based on whether outputs match.
 
 - **Environment**  
@@ -60,20 +60,14 @@ The verification environment is **layered and object-oriented**, built entirely 
 
 - **Test Class**  
   Extends the environment class.  
-  Calls `build()` and `run()` methods to initialize and start simulation.
+  Calls `build() and `run() methods to initialize and start simulation.
 
 - **Top Module (`top.sv`)**  
   - Instantiates the DUT and interface.  
   - Connects the virtual interface to driver and monitors.  
   - Generates clock and reset.  
   - Includes all required packages and testbench files.
-    [Generator]
-     ↓
- [Driver] ← Interface → [DUT]
-     ↓                       ↓
-[Write Monitor]      [Read Monitor]
-     ↓                       ↓
-[Reference Model] →→→ [Scoreboard]
+   
 
  
   ## Results
@@ -102,4 +96,4 @@ This project demonstrated a **complete end-to-end verification flow** for a **4-
 
 The testbench effectively verified all operational modes under **constrained random scenarios**, validating the **functional correctness** of the design.
 
-The verification process achieved **100% code coverage** and produced **traceable, reproducible results**, ensuring the reliability and robustness of the shift register module.
+The verification process achieved **90+ code coverage** and produced **traceable, reproducible results**, ensuring the reliability and robustness of the shift register module.
