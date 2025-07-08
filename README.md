@@ -89,6 +89,10 @@ The verification environment is **layered and object-oriented**, built entirely 
 
 ![image](https://github.com/user-attachments/assets/0c244116-6c9e-4ee7-9132-ee5a8c6cb3dc)
 
+- **vsim -view vsim.wlf(to view waveform)**
+![image](https://github.com/user-attachments/assets/7d78210c-2064-4ad9-9f09-5e989d4142fc)
+
+
 
 ## Conclusion
 
