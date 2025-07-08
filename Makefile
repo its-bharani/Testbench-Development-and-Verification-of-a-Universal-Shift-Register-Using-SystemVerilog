@@ -1,42 +1,48 @@
-#Makefile
+# Makefile for QuestaSim simulation with coverage and waveform dump
+
 RTL = ../rtl/shift_register.v
+TB1 = ../test/top.sv
 LIB = work
 
 COVOP = -coveropt 3 +cover +acc
-TB1 = ../test/top.sv
-
 VSIMOPT = -coverage -vopt work.top
-VSIMCOV = coverage save -onexit -codeAll workcov
-VSIMBATCH = -c -coverage -do " $(VSIMCOV);run -all;exit"
+VSIMDO = log -r /*; coverage save -onexit -codeAll workcov; run -all; quit
+VSIMBATCH = -c -do " $(VSIMDO) "
 
-
+# Target to create work library
 lib:
-        vlib work
-        vmap work work
+	vlib $(LIB)
+	vmap $(LIB) $(LIB)
 
-help:
-        @echo ===========================================================================================================================
-        @echo " clean           =>  clean the earlier log and intermediate files."
-        @echo " lib             =>  Create library and logical mapping."                                                                                @echo " run_tb1         =>  To compile RTL, TB & simulate the RTL using TB in batch mode."
-        @echo " run1            =>  To clean, create libray, logical mapping, compile the source codes & simulate the RTL in batch mode."
-        @echo " html            =>  To display html report using browser"
-        @echo " report          =>  To create the html coverage report from the coverage database file"
-        @echo ===========================================================================================================================
-
-
+# Compile and simulate testbench 1
 run_tb1:
-        vlog -work work $(COVOP) $(RTL) $(TB1)
-        vsim $(VSIMOPT) $(VSIMBATCH)
+	vlog -work $(LIB) $(COVOP) $(RTL) $(TB1)
+	vsim $(VSIMOPT) $(VSIMBATCH)
+
+# Generate HTML coverage report
 report:
-        vcover report  -details -codeAll -html workcov
+	vcover report -details -codeAll -html workcov
 
-run1:clean lib run_tb1 report html
-
+# Open coverage report in browser
 html:
-        firefox covhtmlreport/index.html&
+	firefox covhtmlreport/index.html &
 
+# Clean simulation-generated files
 clean:
-        rm -rf modelsim.ini transcript cov* workcov
-        rm -rf $(LIB)
-        clear
-                          
+	rm -rf modelsim.ini transcript cov* workcov vsim.wlf
+	rm -rf $(LIB)
+	clear
+
+# Full run: clean, build, simulate, generate report, and open HTML
+run1: clean lib run_tb1 report html
+
+# Help menu
+help:
+	@echo ====================================================================================================
+	@echo " clean     =>  Clean earlier log and intermediate files."
+	@echo " lib       =>  Create library and logical mapping."
+	@echo " run_tb1   =>  Compile RTL & TB, simulate with coverage and waveform logging."
+	@echo " run1      =>  Clean, build, simulate, generate coverage report and open it."
+	@echo " report    =>  Generate HTML coverage report."
+	@echo " html      =>  Open HTML coverage report in Firefox."
+	@echo ====================================================================================================
